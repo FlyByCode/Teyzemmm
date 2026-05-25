@@ -197,13 +197,32 @@
  color: #65e6cc;
  }
 
- /* Mobil uyumluluk */
- @media (max-width: 480px) {
- .slayt__metin { padding: 20px 16px 72px; gap: 8px; }
- .slayt__baslik { font-size: clamp(28px, 11vw, 52px); }
- .slayt__etiket { font-size: clamp(10px, 3.8vw, 14px); letter-spacing: 4px; }
- #ilerleme { bottom: 20px; }
+ /* Mobil — intro slaytlar */
+ @media (max-width: 768px) {
+ #slayt-ekrani { cursor: pointer; }
+ .slayt__foto-wrap img { object-position: center center; }
+ .slayt__metin {
+ padding: 16px 20px calc(88px + env(safe-area-inset-bottom, 0));
+ gap: 6px;
  }
+ .slayt__baslik { font-size: clamp(26px, 8.5vw, 40px); }
+ .slayt__etiket { font-size: 11px; letter-spacing: 3px; }
+ #ilerleme { bottom: calc(24px + env(safe-area-inset-bottom, 0)); }
+ #slayt-atla {
+ display: block;
+ position: fixed;
+ top: calc(12px + env(safe-area-inset-top, 0));
+ right: 12px;
+ z-index: 10001;
+ padding: 8px 14px;
+ font-size: 12px;
+ color: #5a8a95;
+ background: rgba(0,0,0,0.5);
+ border: 1px solid #2a4a55;
+ border-radius: 20px;
+ }
+ }
+ #slayt-atla { display: none; }
 
  /* ══════════════════════════════════════════
  LEONARDO TARZI YOLCULUK — sürükle + mouse parallax
@@ -476,38 +495,117 @@
  text-shadow: 0 0 40px rgba(101,230,204,0.4);
  }
 
- /* ── Telefon / tablet ── */
+ /* ── TELEFON: sade galeri (tek büyük foto + alt menü) ── */
  @media (max-width: 768px) {
- .yol-foto {
- --foto-w: clamp(200px, 58vw, 300px);
- top: 54%;
+ body.mobil-mod { overflow: hidden; }
+
+ #yolculuk-bg { animation: none; }
+ #yolculuk-vignette {
+ background: linear-gradient(to bottom,
+ rgba(3,8,9,0.5) 0%, transparent 22%,
+ transparent 72%, rgba(3,8,9,0.92) 100%);
  }
- .yol-foto--hero {
- --foto-w: min(92vw, 380px);
- top: 52%;
- }
+
  #merkez-baslik {
- top: 14%;
- transform: translate(-50%, 0);
+ top: 0;
+ left: 0;
+ right: 0;
+ width: 100%;
+ max-width: none;
+ transform: none;
+ padding: calc(14px + env(safe-area-inset-top, 0)) 16px 12px;
+ background: linear-gradient(to bottom, rgba(3,8,9,0.95), rgba(3,8,9,0.7) 80%, transparent);
+ }
+ #merkez-baslik .mb-etiket {
+ font-size: 10px;
+ letter-spacing: 4px;
+ margin-bottom: 4px;
  }
  #merkez-baslik .mb-baslik {
- font-size: clamp(28px, 9vw, 48px);
+ font-size: clamp(22px, 7vw, 32px);
  }
  #merkez-baslik.soluk .mb-etiket,
- #merkez-baslik.soluk .mb-baslik { opacity: 0.35; }
- .yol-btn { display: flex; align-items: center; justify-content: center; }
- #yol-ok { display: none; }
- #yolculuk-vignette {
- background:
- radial-gradient(ellipse 85% 50% at 50% 55%, transparent 0%, rgba(3,8,9,0.2) 45%, rgba(3,8,9,0.7) 100%),
- linear-gradient(90deg, rgba(3,8,9,0.5) 0%, transparent 8%, transparent 92%, rgba(3,8,9,0.5) 100%);
+ #merkez-baslik.soluk .mb-baslik { opacity: 1; }
+
+ .yol-foto {
+ --foto-w: min(94vw, 420px);
+ top: 50%;
+ left: 50%;
+ margin-left: calc(var(--foto-w) / -2);
+ margin-top: calc(var(--foto-w) * 5 / -10);
+ border-radius: 16px;
  }
+ .yol-foto--hero { --foto-w: min(94vw, 420px); }
+
+ .yol-foto.yol-foto--yan { display: none; }
+
+ #yol-geri, #yol-ileri, #yol-ok { display: none !important; }
+
+ #yolculuk-ilerleme {
+ bottom: calc(78px + env(safe-area-inset-bottom, 0));
+ gap: 8px;
  }
+ .yol-nokta { width: 10px; height: 10px; }
+
+ #yolculuk-ipucu {
+ bottom: calc(132px + env(safe-area-inset-bottom, 0));
+ font-size: 12px;
+ white-space: normal;
+ }
+
+ #yol-mobil-nav {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ gap: 10px;
+ position: fixed;
+ left: 12px;
+ right: 12px;
+ bottom: calc(12px + env(safe-area-inset-bottom, 0));
+ z-index: 8300;
+ padding: 10px 12px;
+ background: rgba(8,24,28,0.92);
+ border: 1px solid rgba(44,228,245,0.25);
+ border-radius: 16px;
+ backdrop-filter: blur(12px);
+ }
+
+ #yol-mobil-nav button {
+ flex: 1;
+ min-height: 48px;
+ border: none;
+ border-radius: 12px;
+ font-size: 15px;
+ font-weight: 700;
+ font-family: inherit;
+ cursor: pointer;
+ -webkit-tap-highlight-color: transparent;
+ }
+ #yol-mbtn-geri {
+ background: rgba(255,255,255,0.08);
+ color: #b8dce4;
+ }
+ #yol-mbtn-ileri {
+ background: linear-gradient(135deg, #14757a, #2ce4f5);
+ color: #041014;
+ }
+ #yol-mbtn-adim {
+ flex: 0 0 auto;
+ min-width: 52px;
+ text-align: center;
+ font-size: 13px;
+ color: #5a8a95;
+ font-weight: 600;
+ }
+
+ .flowers { transform: scale(0.5); transform-origin: bottom center; }
+ #ust-banner { padding-top: calc(12px + env(safe-area-inset-top, 0)); }
+ }
+
+ #yol-mobil-nav { display: none; }
 
  @media (max-width: 480px) {
  .yol-foto { border-radius: 14px; }
- #yolculuk-ilerleme { bottom: calc(52px + env(safe-area-inset-bottom, 0)); }
- .yol-btn { width: 44px; height: 44px; font-size: 20px; }
  }
 
  /* ══════════════════════════════════════════
@@ -764,6 +862,8 @@
  </div>
  </div>
 
+ <button type="button" id="slayt-atla" aria-label="Slaytları atla">Atla →</button>
+
  <!-- İlerleme noktaları (4 övgü) -->
  <div id="ilerleme">
  <div class="nokta aktif" id="n1"></div>
@@ -788,6 +888,11 @@
  <div id="yolculuk-ilerleme"></div>
  <p id="yolculuk-ipucu"></p>
  <div id="yol-ok">→</div>
+ <nav id="yol-mobil-nav" aria-label="Bölüm gezinme">
+ <button type="button" id="yol-mbtn-geri">‹ Geri</button>
+ <span id="yol-mbtn-adim">1 / 4</span>
+ <button type="button" id="yol-mbtn-ileri">İleri ›</button>
+ </nav>
  <div id="yolculuk-finale">
  <div class="finale-etiket">İyi ki Doğdun</div>
  <div class="finale-isim">Rüviş</div>
@@ -893,12 +998,12 @@
  <script>
  // ═══════════════════════════════════════
  // 16 FOTO — hiçbiri tekrarlanmaz
- // Intro: foto1-4 | Yolculuk: foto5-16 (10 yeni foto ekle)
+ // Intro: foto1-4 | Yolculuk: foto5-18
  // ═══════════════════════════════════════
  const BOLUMLER = [
- { etiket: 'Dünyanın', vurgu: 'Zeki', ek: 'si', fotolar: ['foto5.jpeg','foto6.jpeg','foto7.jpeg'] },
+ { etiket: 'Dünyanın', vurgu: 'Zeki', ek: 'si', fotolar: ['foto5.jpeg','foto6.jpeg','foto7.jpeg','foto17.jpeg'] },
  { etiket: 'Dünyanın', vurgu: 'Komik', ek: 'i', fotolar: ['foto8.jpeg','foto9.jpeg','foto10.jpeg'] },
- { etiket: 'Dünyanın', vurgu: 'Samimi', ek: 'si', fotolar: ['foto11.jpeg','foto12.jpeg','foto13.jpeg'] },
+ { etiket: 'Dünyanın', vurgu: 'Samimi', ek: 'si', fotolar: ['foto11.jpeg','foto12.jpeg','foto13.jpeg','foto18.jpeg'] },
  { etiket: 'Dünyanın', vurgu: 'Güzel', ek: 'i', fotolar: ['foto14.jpeg','foto15.jpeg','foto16.jpeg'] },
  ];
 
@@ -906,8 +1011,16 @@
  return window.innerWidth < 768 || matchMedia('(pointer: coarse)').matches;
  }
  let MOBIL = mobilMi();
- const MOBIL_OTO_ILERLE = true;
- function surukleHassasiyet() { return MOBIL ? 0.0075 : 0.0042; }
+ const MOBIL_OTO_ILERLE = false;
+ function surukleHassasiyet() { return MOBIL ? 0.009 : 0.0042; }
+ let dokunmaBasX = 0;
+
+ function mobilModuUygula() {
+ MOBIL = mobilMi();
+ document.body.classList.toggle('mobil-mod', MOBIL);
+ guncelleIpucu();
+ guncelleMobilAdim();
+ }
 
  const FOTO_YER = [
  { ox: -34, oy: -6, rot: -8, derinlik: 0.4 },
@@ -951,16 +1064,39 @@
  const btnGeri = document.getElementById('yol-geri');
  const btnIleri = document.getElementById('yol-ileri');
 
+ const mbtnGeri = document.getElementById('yol-mbtn-geri');
+ const mbtnIleri = document.getElementById('yol-mbtn-ileri');
+ const mbtnAdim = document.getElementById('yol-mbtn-adim');
+
  function guncelleIpucu() {
- MOBIL = mobilMi();
  ipucuEl.textContent = MOBIL
- ? 'Parmağınla sola kaydır veya › butonuna bas'
- : 'Sola sürükle — fareyi oynat (Leonardo tarzı)';
+ ? 'Sola kaydır veya alttaki İleri\'ye bas'
+ : 'Sola sürükle — fareyi oynat';
  }
- guncelleIpucu();
- window.addEventListener('resize', guncelleIpucu);
+ function guncelleMobilAdim() {
+ if (!mbtnAdim) return;
+ const idx = Math.min(Math.round(hedefIlerleme), BOLUMLER.length - 1);
+ mbtnAdim.textContent = (idx + 1) + ' / ' + BOLUMLER.length;
+ if (mbtnGeri) mbtnGeri.disabled = hedefIlerleme <= 0;
+ if (mbtnIleri) mbtnIleri.disabled = hedefIlerleme >= BOLUMLER.length;
+ }
+ mobilModuUygula();
+ window.addEventListener('resize', mobilModuUygula);
+
+ document.getElementById('slayt-atla').addEventListener('click', () => {
+ mevcut = slaytlar.length;
+ slaytGoster(mevcut);
+ });
+ document.getElementById('slayt-ekrani').addEventListener('click', e => {
+ if (!mobilMi()) return;
+ if (e.target.closest('#slayt-atla')) return;
+ mevcut = slaytlar.length;
+ slaytGoster(mevcut);
+ });
 
  function yolculukBaslat() {
+ MOBIL = mobilMi();
+ document.body.classList.toggle('mobil-mod', MOBIL);
  yolIz.innerHTML = '';
  ilerlemeEl.innerHTML = '';
  BOLUMLER.forEach((_, i) => {
@@ -970,10 +1106,11 @@
  ilerlemeEl.appendChild(n);
  });
  BOLUMLER.forEach((bolum, bi) => {
- bolum.fotolar.forEach((dosya, fi) => {
+ const mobilFoto = MOBIL ? [bolum.fotolar[0]] : bolum.fotolar;
+ mobilFoto.forEach((dosya, fi) => {
  const yer = FOTO_YER[fi % FOTO_YER.length];
  const el = document.createElement('div');
- el.className = 'yol-foto' + (fi === 1 ? ' yol-foto--hero' : '');
+ el.className = 'yol-foto' + (MOBIL || fi === 1 ? ' yol-foto--hero' : ' yol-foto--yan');
  el.dataset.bolum = bi;
  el.dataset.ox = yer.ox;
  el.dataset.oy = yer.oy;
@@ -1013,31 +1150,42 @@
 
  function yolFotoKonumlari(p) {
  const vw = window.innerWidth, vh = window.innerHeight;
- const t = (Date.now() - zamanBas) * 0.001;
- const surukleAktif = surukleniyor || Math.abs(hedefIlerleme - ilerleme) > 0.02;
+ const surukleAktif = !MOBIL && (surukleniyor || Math.abs(hedefIlerleme - ilerleme) > 0.02);
  merkezBaslik.classList.toggle('soluk', surukleAktif);
 
+ if (MOBIL) {
+ document.querySelectorAll('.yol-foto').forEach(el => {
+ const bi = parseInt(el.dataset.bolum, 10);
+ const lokal = p - bi;
+ const gorunur = Math.abs(lokal) < 0.45;
+ const kayma = lokal * vw * 0.85;
+ el.style.opacity = gorunur ? 1 : 0;
+ el.style.zIndex = gorunur ? 100 : 0;
+ el.style.transform = gorunur
+ ? 'translate3d(' + kayma + 'px, 0, 0) scale(1) rotateY(0deg)'
+ : 'translate3d(' + kayma + 'px, 0, 0) scale(0.85) rotateY(0deg)';
+ });
+ return;
+ }
+
+ const t = (Date.now() - zamanBas) * 0.001;
  document.querySelectorAll('.yol-foto').forEach((el, i) => {
  const bi = parseInt(el.dataset.bolum, 10);
  const ox = parseFloat(el.dataset.ox), oy = parseFloat(el.dataset.oy);
  const rot0 = parseFloat(el.dataset.rot);
  const pDerin = parseFloat(el.dataset.parallax) || 0.5;
  const lokal = p - bi;
-
  const isHero = el.classList.contains('yol-foto--hero');
- const kaydirX = lokal * -vw * (MOBIL ? 0.75 : 0.88);
- const xPx = (ox / 100) * vw + kaydirX + fareX * pDerin * (MOBIL ? 18 : 38) + Math.sin(t + i * 0.7) * 3;
- const yPx = (oy / 100) * vh + fareY * pDerin * (MOBIL ? 14 : 28) + Math.cos(t * 0.8 + i) * 2;
+ const kaydirX = lokal * -vw * 0.88;
+ const xPx = (ox / 100) * vw + kaydirX + fareX * pDerin * 38 + Math.sin(t + i * 0.7) * 3;
+ const yPx = (oy / 100) * vh + fareY * pDerin * 28 + Math.cos(t * 0.8 + i) * 2;
  const merkezUzak = Math.abs(lokal);
  const derinlik = Math.max(0, 1 - merkezUzak * 0.42);
- let scale = isHero
- ? 0.78 + derinlik * 0.32
- : 0.62 + derinlik * 0.38;
+ let scale = isHero ? 0.78 + derinlik * 0.32 : 0.62 + derinlik * 0.38;
  if (merkezUzak < 0.28) scale = Math.max(scale, isHero ? 1.02 : 0.88);
  const opak = lokal < -0.75 ? 0 : lokal > 1.55 ? 0 : Math.min(1, derinlik * 0.9 + 0.35);
- const rotY = lokal * (MOBIL ? -14 : -20) + fareX * 3;
+ const rotY = lokal * -20 + fareX * 3;
  const z = Math.round((1 - merkezUzak) * 300) + (isHero ? 80 : 0);
-
  el.classList.toggle('onde', merkezUzak < 0.4);
  el.style.opacity = opak;
  el.style.zIndex = z;
@@ -1055,6 +1203,7 @@
  const idx = Math.round(ilerleme);
  if (idx !== sonBolumIdx && idx < BOLUMLER.length) { sonBolumIdx = idx; merkezBaslikGuncelle(idx); }
  yolFotoKonumlari(ilerleme);
+ guncelleMobilAdim();
  if (barDolgu) barDolgu.style.width = (Math.min(ilerleme, BOLUMLER.length) / BOLUMLER.length * 100) + '%';
  if (ilerleme >= BOLUMLER.length - 0.05 && hedefIlerleme >= BOLUMLER.length - 0.05) { yolculukBitir(); return; }
  yolRaf = requestAnimationFrame(yolAnimasyon);
@@ -1083,7 +1232,9 @@
 
  function bolumAtla(yon) {
  mobilOtoDurdur();
- hedefIlerleme = Math.max(0, Math.min(BOLUMLER.length, Math.round(hedefIlerleme) + yon));
+ const yeni = Math.round(hedefIlerleme) + yon;
+ hedefIlerleme = Math.max(0, Math.min(BOLUMLER.length, yeni));
+ guncelleMobilAdim();
  }
 
  yolEkran.addEventListener('mousedown', e => { e.preventDefault(); surukleBasla(e.clientX); });
@@ -1091,20 +1242,37 @@
  window.addEventListener('mouseup', surukleBitir);
 
  yolEkran.addEventListener('touchstart', e => {
- if (e.touches[0]) surukleBasla(e.touches[0].clientX);
+ if (!e.touches[0]) return;
+ dokunmaBasX = e.touches[0].clientX;
+ if (!MOBIL) surukleBasla(e.touches[0].clientX);
  }, { passive: true });
 
  yolEkran.addEventListener('touchmove', e => {
  if (!e.touches[0]) return;
+ if (MOBIL) {
+ const dx = e.touches[0].clientX - dokunmaBasX;
+ hedefIlerleme = Math.max(0, Math.min(BOLUMLER.length, Math.round(ilerleme) - dx / (window.innerWidth * 0.55)));
+ e.preventDefault();
+ return;
+ }
  surukleHareket(e.touches[0].clientX);
- fareParallax(e.touches[0].clientX, e.touches[0].clientY);
  e.preventDefault();
  }, { passive: false });
 
- yolEkran.addEventListener('touchend', surukleBitir);
- yolEkran.addEventListener('touchcancel', surukleBitir);
+ yolEkran.addEventListener('touchend', e => {
+ if (!e.changedTouches[0]) return;
+ if (MOBIL) {
+ const dx = e.changedTouches[0].clientX - dokunmaBasX;
+ if (Math.abs(dx) > 40) bolumAtla(dx < 0 ? 1 : -1);
+ else hedefIlerleme = Math.round(ilerleme);
+ return;
+ }
+ surukleBitir();
+ });
+ yolEkran.addEventListener('touchcancel', () => { if (!MOBIL) surukleBitir(); });
 
  function fareParallax(clientX, clientY) {
+ if (MOBIL) return;
  hedefFareX = (clientX / window.innerWidth - 0.5) * 2;
  hedefFareY = (clientY / window.innerHeight - 0.5) * 2;
  }
@@ -1112,6 +1280,8 @@
 
  if (btnGeri) btnGeri.addEventListener('click', e => { e.stopPropagation(); bolumAtla(-1); });
  if (btnIleri) btnIleri.addEventListener('click', e => { e.stopPropagation(); bolumAtla(1); });
+ if (mbtnGeri) mbtnGeri.addEventListener('click', e => { e.stopPropagation(); bolumAtla(-1); });
+ if (mbtnIleri) mbtnIleri.addEventListener('click', e => { e.stopPropagation(); bolumAtla(1); });
 
  function mobilOtoBaslat() {
  mobilOtoDurdur();
