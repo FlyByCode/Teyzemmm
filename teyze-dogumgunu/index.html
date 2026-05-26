@@ -278,8 +278,9 @@
  z-index: 1;
  }
 
+ /* ── FIX 1: Masaüstü ve mobil için ortak foto boyutları ── */
  .yol-foto {
- --foto-w: clamp(200px, 36vw, 340px);
+ --foto-w: clamp(160px, 28vw, 300px);
  position: absolute;
  left: 50%;
  top: 52%;
@@ -297,7 +298,7 @@
  }
 
  .yol-foto--hero {
- --foto-w: clamp(260px, 52vw, 480px);
+ --foto-w: clamp(200px, 44vw, 440px);
  z-index: 50;
  border-radius: 20px;
  }
@@ -495,7 +496,8 @@
  text-shadow: 0 0 40px rgba(101,230,204,0.4);
  }
 
- /* ── TELEFON: sade galeri (tek büyük foto + alt menü) ── */
+ /* ── FIX 2: Mobilde yan fotoğraflar artık görünür,
+    küçük boyutla 3'lü fan düzeni ── */
  @media (max-width: 768px) {
  body.mobil-mod { overflow: hidden; }
 
@@ -506,6 +508,7 @@
  transparent 72%, rgba(3,8,9,0.92) 100%);
  }
 
+ /* Mobil başlık - üst şerit */
  #merkez-baslik {
  top: 0;
  left: 0;
@@ -524,20 +527,15 @@
  #merkez-baslik .mb-baslik {
  font-size: clamp(22px, 7vw, 32px);
  }
+ /* Mobilde de sürükleme sırasında soldur */
  #merkez-baslik.soluk .mb-etiket,
- #merkez-baslik.soluk .mb-baslik { opacity: 1; }
+ #merkez-baslik.soluk .mb-baslik { opacity: 0.15; }
 
- .yol-foto {
- --foto-w: min(94vw, 420px);
- top: 50%;
- left: 50%;
- margin-left: calc(var(--foto-w) / -2);
- margin-top: calc(var(--foto-w) * 5 / -10);
- border-radius: 16px;
- }
- .yol-foto--hero { --foto-w: min(94vw, 420px); }
+ /* Mobil foto boyutları: 3 fotoğraf yan yana sığsın */
+ .yol-foto        { --foto-w: clamp(100px, 24vw, 190px); border-radius: 12px; }
+ .yol-foto--hero  { --foto-w: clamp(150px, 38vw, 300px); border-radius: 14px; }
 
- .yol-foto.yol-foto--yan { display: none; }
+ /* YAN FOTOĞRAFLARI GİZLEME — artık göster */
 
  #yol-geri, #yol-ileri, #yol-ok { display: none !important; }
 
@@ -605,7 +603,8 @@
  #yol-mobil-nav { display: none; }
 
  @media (max-width: 480px) {
- .yol-foto { border-radius: 14px; }
+ .yol-foto { border-radius: 10px; }
+ .yol-foto--hero { border-radius: 12px; }
  }
 
  /* ══════════════════════════════════════════
@@ -1012,7 +1011,9 @@
  }
  let MOBIL = mobilMi();
  const MOBIL_OTO_ILERLE = false;
- function surukleHassasiyet() { return MOBIL ? 0.009 : 0.0042; }
+
+ // ★ FIX 3: Mobil sürükle hassasiyeti biraz artırıldı (daha doğal hissettirmek için)
+ function surukleHassasiyet() { return MOBIL ? 0.007 : 0.0042; }
  let dokunmaBasX = 0;
 
  function mobilModuUygula() {
@@ -1026,6 +1027,7 @@
  { ox: -34, oy: -6, rot: -8, derinlik: 0.4 },
  { ox: 0, oy: 0, rot: 0, derinlik: 0.7 },
  { ox: 34, oy: 6, rot: 8, derinlik: 0.4 },
+ { ox: -20, oy: 10, rot: -5, derinlik: 0.35 },
  ];
 
  const slaytlar = ['s1','s2','s3','s4'];
@@ -1063,7 +1065,6 @@
  const barDolgu = document.getElementById('yolculuk-bar-dolgu');
  const btnGeri = document.getElementById('yol-geri');
  const btnIleri = document.getElementById('yol-ileri');
-
  const mbtnGeri = document.getElementById('yol-mbtn-geri');
  const mbtnIleri = document.getElementById('yol-mbtn-ileri');
  const mbtnAdim = document.getElementById('yol-mbtn-adim');
@@ -1105,12 +1106,14 @@
  n.id = 'yn' + i;
  ilerlemeEl.appendChild(n);
  });
+
+ // ★ FIX 1 (JS): Mobilde de tüm fotoğrafları yükle — artık mobilFoto kısıtlaması yok
  BOLUMLER.forEach((bolum, bi) => {
- const mobilFoto = MOBIL ? [bolum.fotolar[0]] : bolum.fotolar;
- mobilFoto.forEach((dosya, fi) => {
+ bolum.fotolar.forEach((dosya, fi) => {
  const yer = FOTO_YER[fi % FOTO_YER.length];
  const el = document.createElement('div');
- el.className = 'yol-foto' + (MOBIL || fi === 1 ? ' yol-foto--hero' : ' yol-foto--yan');
+ const isHero = (fi === 1 || bolum.fotolar.length === 1);
+ el.className = 'yol-foto' + (isHero ? ' yol-foto--hero' : ' yol-foto--yan');
  el.dataset.bolum = bi;
  el.dataset.ox = yer.ox;
  el.dataset.oy = yer.oy;
@@ -1126,6 +1129,7 @@
  yolIz.appendChild(el);
  });
  });
+
  merkezBaslikGuncelle(0);
  yolEkran.classList.add('aktif');
  yolAktif = true;
@@ -1148,27 +1152,17 @@
  });
  }
 
+ // ★ FIX 2 (JS): Mobilde de aynı 3D layout — ayrı mobil kolu kaldırıldı
  function yolFotoKonumlari(p) {
  const vw = window.innerWidth, vh = window.innerHeight;
- const surukleAktif = !MOBIL && (surukleniyor || Math.abs(hedefIlerleme - ilerleme) > 0.02);
+ const surukleAktif = surukleniyor || Math.abs(hedefIlerleme - ilerleme) > 0.02;
  merkezBaslik.classList.toggle('soluk', surukleAktif);
 
- if (MOBIL) {
- document.querySelectorAll('.yol-foto').forEach(el => {
- const bi = parseInt(el.dataset.bolum, 10);
- const lokal = p - bi;
- const gorunur = Math.abs(lokal) < 0.45;
- const kayma = lokal * vw * 0.85;
- el.style.opacity = gorunur ? 1 : 0;
- el.style.zIndex = gorunur ? 100 : 0;
- el.style.transform = gorunur
- ? 'translate3d(' + kayma + 'px, 0, 0) scale(1) rotateY(0deg)'
- : 'translate3d(' + kayma + 'px, 0, 0) scale(0.85) rotateY(0deg)';
- });
- return;
- }
-
  const t = (Date.now() - zamanBas) * 0.001;
+ // Mobilde fare parallax sıfır (dokunmatik ekranda yok)
+ const fx = MOBIL ? 0 : fareX;
+ const fy = MOBIL ? 0 : fareY;
+
  document.querySelectorAll('.yol-foto').forEach((el, i) => {
  const bi = parseInt(el.dataset.bolum, 10);
  const ox = parseFloat(el.dataset.ox), oy = parseFloat(el.dataset.oy);
@@ -1176,22 +1170,26 @@
  const pDerin = parseFloat(el.dataset.parallax) || 0.5;
  const lokal = p - bi;
  const isHero = el.classList.contains('yol-foto--hero');
+
  const kaydirX = lokal * -vw * 0.88;
- const xPx = (ox / 100) * vw + kaydirX + fareX * pDerin * 38 + Math.sin(t + i * 0.7) * 3;
- const yPx = (oy / 100) * vh + fareY * pDerin * 28 + Math.cos(t * 0.8 + i) * 2;
+ const xPx = (ox / 100) * vw + kaydirX + fx * pDerin * 38 + Math.sin(t + i * 0.7) * 3;
+ const yPx = (oy / 100) * vh + fy * pDerin * 28 + Math.cos(t * 0.8 + i) * 2;
+
  const merkezUzak = Math.abs(lokal);
  const derinlik = Math.max(0, 1 - merkezUzak * 0.42);
  let scale = isHero ? 0.78 + derinlik * 0.32 : 0.62 + derinlik * 0.38;
  if (merkezUzak < 0.28) scale = Math.max(scale, isHero ? 1.02 : 0.88);
+
  const opak = lokal < -0.75 ? 0 : lokal > 1.55 ? 0 : Math.min(1, derinlik * 0.9 + 0.35);
- const rotY = lokal * -20 + fareX * 3;
+ const rotY = lokal * -20 + fx * 3;
  const z = Math.round((1 - merkezUzak) * 300) + (isHero ? 80 : 0);
+
  el.classList.toggle('onde', merkezUzak < 0.4);
  el.style.opacity = opak;
  el.style.zIndex = z;
  el.style.transform =
  'translate3d(' + xPx + 'px,' + yPx + 'px,' + (-merkezUzak * 120) + 'px) ' +
- 'scale(' + scale + ') rotateY(' + rotY + 'deg) rotate(' + (rot0 + fareY * 2) + 'deg)';
+ 'scale(' + scale + ') rotateY(' + rotY + 'deg) rotate(' + (rot0 + fy * 2) + 'deg)';
  });
  }
 
@@ -1209,8 +1207,11 @@
  yolRaf = requestAnimationFrame(yolAnimasyon);
  }
 
+ // ★ FIX 3 (JS): Ortak sürükle fonksiyonları — mobil ve masaüstü aynı delta mantığı
  function surukleBasla(x) {
- surukleniyor = true; sonSurukleX = x;
+ surukleniyor = true;
+ sonSurukleX = x;
+ dokunmaBasX = x;
  yolEkran.classList.add('surukleniyor');
  mobilOtoDurdur();
  }
@@ -1219,14 +1220,21 @@
  if (!surukleniyor) return;
  const dx = x - sonSurukleX;
  sonSurukleX = x;
+ // Fotoğraflar parmakla birlikte kayar — canlı efekt
  hedefIlerleme = Math.max(0, Math.min(BOLUMLER.length, hedefIlerleme - dx * surukleHassasiyet()));
  }
 
- function surukleBitir() {
+ function surukleBitir(sonX) {
  if (!surukleniyor) return;
  surukleniyor = false;
  yolEkran.classList.remove('surukleniyor');
+ // Parmak bırakıldığında toplam kaydırma mesafesine göre bölüm değiştir
+ const toplamDx = (sonX !== undefined ? sonX : sonSurukleX) - dokunmaBasX;
+ if (Math.abs(toplamDx) > window.innerWidth * 0.12) {
  hedefIlerleme = Math.max(0, Math.min(BOLUMLER.length, Math.round(hedefIlerleme)));
+ } else {
+ hedefIlerleme = Math.max(0, Math.min(BOLUMLER.length, Math.round(ilerleme)));
+ }
  if (MOBIL && MOBIL_OTO_ILERLE) mobilOtoBaslat();
  }
 
@@ -1237,40 +1245,31 @@
  guncelleMobilAdim();
  }
 
+ // Mouse olayları
  yolEkran.addEventListener('mousedown', e => { e.preventDefault(); surukleBasla(e.clientX); });
  window.addEventListener('mousemove', e => surukleHareket(e.clientX));
- window.addEventListener('mouseup', surukleBitir);
+ window.addEventListener('mouseup', e => surukleBitir(e.clientX));
 
+ // Touch olayları — mobil ve tablet için canlı sürükle efekti
  yolEkran.addEventListener('touchstart', e => {
  if (!e.touches[0]) return;
- dokunmaBasX = e.touches[0].clientX;
- if (!MOBIL) surukleBasla(e.touches[0].clientX);
+ surukleBasla(e.touches[0].clientX);
  }, { passive: true });
 
  yolEkran.addEventListener('touchmove', e => {
  if (!e.touches[0]) return;
- if (MOBIL) {
- const dx = e.touches[0].clientX - dokunmaBasX;
- hedefIlerleme = Math.max(0, Math.min(BOLUMLER.length, Math.round(ilerleme) - dx / (window.innerWidth * 0.55)));
- e.preventDefault();
- return;
- }
  surukleHareket(e.touches[0].clientX);
  e.preventDefault();
  }, { passive: false });
 
  yolEkran.addEventListener('touchend', e => {
  if (!e.changedTouches[0]) return;
- if (MOBIL) {
- const dx = e.changedTouches[0].clientX - dokunmaBasX;
- if (Math.abs(dx) > 40) bolumAtla(dx < 0 ? 1 : -1);
- else hedefIlerleme = Math.round(ilerleme);
- return;
- }
- surukleBitir();
+ surukleBitir(e.changedTouches[0].clientX);
  });
- yolEkran.addEventListener('touchcancel', () => { if (!MOBIL) surukleBitir(); });
 
+ yolEkran.addEventListener('touchcancel', () => surukleBitir());
+
+ // Fare parallax (sadece masaüstü)
  function fareParallax(clientX, clientY) {
  if (MOBIL) return;
  hedefFareX = (clientX / window.innerWidth - 0.5) * 2;
